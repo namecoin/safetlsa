@@ -1,6 +1,6 @@
 # safetlsa
 
-safetlsa is a library generates TLS certificates from TLSA records that are
+safetlsa is a library that generates TLS certificates from TLSA records that are
 safe to use as trust anchors.  It uses name constraints and dehydrated
 certificates to eliminate most of the attack surface of the X.509
 specification.
