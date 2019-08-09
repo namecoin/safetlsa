@@ -1,4 +1,4 @@
-// Copyright 2018 Jeremy Rand.
+// Copyright 2018-2019 Jeremy Rand.
 
 // This file is part of safetlsa.
 //
@@ -26,7 +26,7 @@ import (
 	"github.com/miekg/dns"
 
 	"github.com/namecoin/ncdns/certdehydrate"
-	"github.com/namecoin/ncdns/x509"
+	"github.com/namecoin/x509-signature-splice/x509"
 )
 
 func GetCertFromTLSA(domain string, tlsa *dns.TLSA, parentDERBytes []byte, parentPrivateKey interface{}) ([]byte, error) {
