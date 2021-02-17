@@ -23,8 +23,10 @@ package safetlsa
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/hex"
 	"fmt"
 	"math/big"
 	"time"
@@ -70,10 +72,13 @@ func GenerateDomainCA(domain string, publicKeyBytes []byte, parentDERBytes []byt
 		return nil, fmt.Errorf("failed to generate serial number: %s", err)
 	}
 
+	aiaPubHash := sha256.Sum256(parentCert.RawSubjectPublicKeyInfo)
+	aiaPubHashStr := hex.EncodeToString(aiaPubHash[:])
+
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
-			CommonName: domain + " Domain CA",
+			CommonName: domain + " Domain AIA Parent CA",
 			SerialNumber: "Namecoin TLS Certificate",
 		},
 		NotBefore: time.Now().Add(-1 * time.Hour),
@@ -82,11 +87,13 @@ func GenerateDomainCA(domain string, publicKeyBytes []byte, parentDERBytes []byt
 		IsCA: true,
 		//KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
 		KeyUsage: x509.KeyUsageCertSign,
-		//ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		BasicConstraintsValid: true,
 
 		PermittedDNSDomainsCritical: true,
 		PermittedDNSDomains:         []string{domain},
+
+		IssuingCertificateURL: []string{"http://aia.x--nmc.bit/aia?domain=.bit%20TLD%20CA&pubsha256=" + aiaPubHashStr},
 	}
 
 	//hosts := strings.Split(*host, ",")

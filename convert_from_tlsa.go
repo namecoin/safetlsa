@@ -32,7 +32,7 @@ import (
 func GetCertFromTLSA(domain string, tlsa *dns.TLSA, parentDERBytes []byte, parentPrivateKey interface{}) ([]byte, error) {
 	// CA not in user's trust store; public key; not hashed
 	if tlsa.Usage == 2 && tlsa.Selector == 1 && tlsa.MatchingType == 0 {
-		domain = strings.TrimSuffix(domain, " Domain CA")
+		domain = strings.TrimSuffix(domain, " Domain AIA Parent CA")
 
 		publicKeyBytes, err := hex.DecodeString(tlsa.Certificate)
 		if err != nil {
