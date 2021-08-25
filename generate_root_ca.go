@@ -101,7 +101,7 @@ func GenerateRootCA(commonNamePrefix string) ([]byte, interface{}, error) {
 			CommonName: commonNamePrefix + " Root CA",
 			SerialNumber: "Namecoin TLS Certificate",
 		},
-		NotBefore: time.Now().Add(-1 * time.Hour),
+		NotBefore: time.Now().Add(-1 * ValidityShortTerm()),
 		NotAfter:  time.Now().Add(43800 * time.Hour),
 
 		IsCA: true,
