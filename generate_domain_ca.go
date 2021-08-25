@@ -81,8 +81,8 @@ func GenerateDomainCA(domain string, publicKeyBytes []byte, parentDERBytes []byt
 			CommonName: domain + " Domain AIA Parent CA",
 			SerialNumber: "Namecoin TLS Certificate",
 		},
-		NotBefore: time.Now().Add(-1 * time.Hour),
-		NotAfter:  time.Now().Add(1 * time.Hour),
+		NotBefore: time.Now().Add(-1 * ValidityShortTerm()),
+		NotAfter:  time.Now().Add(1 * ValidityShortTerm()),
 
 		IsCA: true,
 		//KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
