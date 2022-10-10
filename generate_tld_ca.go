@@ -91,7 +91,7 @@ func GenerateTLDCA(domain string, parentDERBytes []byte, parentPrivateKey interf
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
-			CommonName: "." + domain + " TLD CA",
+			CommonName:   "." + domain + " TLD CA",
 			SerialNumber: "Namecoin TLS Certificate",
 		},
 		NotBefore: time.Now().Add(-1 * ValidityShortTerm()),
@@ -99,7 +99,7 @@ func GenerateTLDCA(domain string, parentDERBytes []byte, parentPrivateKey interf
 
 		IsCA: true,
 		//KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
-		KeyUsage: x509.KeyUsageCertSign,
+		KeyUsage:              x509.KeyUsageCertSign,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		BasicConstraintsValid: true,
 
