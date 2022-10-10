@@ -98,7 +98,7 @@ func GenerateRootCA(commonNamePrefix string) ([]byte, interface{}, error) {
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
-			CommonName: commonNamePrefix + " Root CA",
+			CommonName:   commonNamePrefix + " Root CA",
 			SerialNumber: "Namecoin TLS Certificate",
 		},
 		NotBefore: time.Now().Add(-1 * ValidityShortTerm()),
