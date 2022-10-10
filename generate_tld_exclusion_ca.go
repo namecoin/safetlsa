@@ -91,7 +91,7 @@ func GenerateTLDExclusionCA(domain string, parentDERBytes []byte, parentPrivateK
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
-			CommonName: "." + domain + " TLD Exclusion CA",
+			CommonName:   "." + domain + " TLD Exclusion CA",
 			SerialNumber: "Namecoin TLS Certificate",
 		},
 		NotBefore: time.Now().Add(-1 * ValidityShortTerm()),
@@ -104,7 +104,7 @@ func GenerateTLDExclusionCA(domain string, parentDERBytes []byte, parentPrivateK
 		BasicConstraintsValid: true,
 
 		PermittedDNSDomainsCritical: true,
-		ExcludedDNSDomains:         []string{"." + domain},
+		ExcludedDNSDomains:          []string{"." + domain},
 	}
 
 	//hosts := strings.Split(*host, ",")
