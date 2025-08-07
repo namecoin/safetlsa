@@ -27,6 +27,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"time"
@@ -34,7 +35,7 @@ import (
 
 // Returns cert, error
 // nolint: lll
-func GenerateDomainCA(domain string, publicKeyBytes []byte, parentDERBytes []byte, parentPrivateKey interface{}) ([]byte, error) {
+func GenerateDomainCA(domain string, publicKeyBytes []byte, parentDERBytes []byte, parentPrivateKey interface{}, stapled map[string]string) ([]byte, error) {
 	parentCert, err := x509.ParseCertificate(parentDERBytes)
 	if err != nil {
 		return nil, fmt.Errorf("Error parsing parent certificate: %s", err)
@@ -75,11 +76,21 @@ func GenerateDomainCA(domain string, publicKeyBytes []byte, parentDERBytes []byt
 	aiaPubHash := sha256.Sum256(parentCert.RawSubjectPublicKeyInfo)
 	aiaPubHashStr := hex.EncodeToString(aiaPubHash[:])
 
+	subjectSerialNumber := "Namecoin TLS Certificate"
+	if stapled != nil {
+		stapledBytes, err := json.Marshal(stapled)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal stapled data: %s", err)
+		}
+
+		subjectSerialNumber = subjectSerialNumber + "\n\nStapled: " + string(stapledBytes)
+	}
+
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
 			CommonName:   domain + " Domain AIA Parent CA",
-			SerialNumber: "Namecoin TLS Certificate",
+			SerialNumber: subjectSerialNumber,
 		},
 		NotBefore: time.Now().Add(-1 * ValidityShortTerm()),
 		NotAfter:  time.Now().Add(1 * ValidityShortTerm()),
