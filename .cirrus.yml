@@ -37,8 +37,13 @@ task:
   alias: Unit Tests
   container:
     image: golang:$GO_VERSION
+  kingpin_script:
+    - mkdir -p $(go env GOPATH)/src/github.com/alecthomas
+    - cd $(go env GOPATH)/src/github.com/alecthomas
+    - git clone https://github.com/alecthomas/kingpin.git
   fetch_script:
     - go mod init github.com/namecoin/safetlsa
+    - go mod edit -replace gopkg.in/alecthomas/kingpin.v2=$(go env GOPATH)/src/github.com/alecthomas/kingpin
     - go mod tidy
   test_script: go test -tags "$GOX_TAGS" -v ./...
   env:
