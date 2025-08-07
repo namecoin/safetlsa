@@ -29,7 +29,7 @@ import (
 	"github.com/namecoin/ncdns/certdehydrate"
 )
 
-func GetCertFromTLSA(domain string, tlsa *dns.TLSA, parentDERBytes []byte, parentPrivateKey interface{}) ([]byte, error) {
+func GetCertFromTLSA(domain string, tlsa *dns.TLSA, parentDERBytes []byte, parentPrivateKey interface{}, stapled map[string]string) ([]byte, error) {
 	// CA not in user's trust store; public key; not hashed
 	if tlsa.Usage == 2 && tlsa.Selector == 1 && tlsa.MatchingType == 0 {
 		domain = strings.TrimSuffix(domain, " Domain AIA Parent CA")
@@ -40,7 +40,7 @@ func GetCertFromTLSA(domain string, tlsa *dns.TLSA, parentDERBytes []byte, paren
 		}
 
 		// Generate domain CA
-		domainCA, err := GenerateDomainCA(domain, publicKeyBytes, parentDERBytes, parentPrivateKey)
+		domainCA, err := GenerateDomainCA(domain, publicKeyBytes, parentDERBytes, parentPrivateKey, stapled)
 		if err != nil {
 			return nil, fmt.Errorf("Error generating domain CA: %s", err)
 		}
