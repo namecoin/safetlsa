@@ -30,6 +30,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"strconv"
 	"time"
 )
 
@@ -76,8 +77,24 @@ func GenerateDomainCA(domain string, publicKeyBytes []byte, parentDERBytes []byt
 	aiaPubHash := sha256.Sum256(parentCert.RawSubjectPublicKeyInfo)
 	aiaPubHashStr := hex.EncodeToString(aiaPubHash[:])
 
+	notAfter := time.Now().Add(1 * ValidityShortTerm())
+
 	subjectSerialNumber := "Namecoin TLS Certificate"
 	if stapled != nil {
+		stapledNotAfterStr, ok := stapled["notafter"]
+		if ok {
+			stapledNotAfterInt, err := strconv.ParseInt(stapledNotAfterStr, 10, 64)
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse stapled NotAfter: %s", err)
+			}
+
+			stapledNotAfterTime := time.Unix(stapledNotAfterInt, 0)
+
+			if stapledNotAfterTime.Before(notAfter) {
+				notAfter = stapledNotAfterTime
+			}
+		}
+
 		stapledBytes, err := json.Marshal(stapled)
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal stapled data: %s", err)
@@ -93,7 +110,7 @@ func GenerateDomainCA(domain string, publicKeyBytes []byte, parentDERBytes []byt
 			SerialNumber: subjectSerialNumber,
 		},
 		NotBefore: time.Now().Add(-1 * ValidityShortTerm()),
-		NotAfter:  time.Now().Add(1 * ValidityShortTerm()),
+		NotAfter:  notAfter,
 
 		IsCA: true,
 		//KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
