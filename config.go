@@ -29,6 +29,9 @@ var (
 	validityFlag = cflag.Int(flagGroup, "validity-short-term-seconds", 1*60*60,
 		"Use the time of signing +/- this duration as the validity period "+
 			"for short-term certificates.")
+	tldNameConstraintFlag = cflag.Bool(flagGroup, "tld-name-constraint", true,
+		"Restrict TLD CAs to their TLD with a name constraint.  Disable this "+
+			"to issue certificates for domains outside the TLD.")
 )
 
 func ValidityShortTerm() time.Duration {

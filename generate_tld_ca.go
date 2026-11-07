@@ -102,9 +102,11 @@ func GenerateTLDCA(domain string, parentDERBytes []byte, parentPrivateKey interf
 		KeyUsage:              x509.KeyUsageCertSign,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		BasicConstraintsValid: true,
+	}
 
-		PermittedDNSDomainsCritical: true,
-		PermittedDNSDomains:         []string{"." + domain},
+	if tldNameConstraintFlag.Value() {
+		template.PermittedDNSDomainsCritical = true
+		template.PermittedDNSDomains = []string{"." + domain}
 	}
 
 	//hosts := strings.Split(*host, ",")
