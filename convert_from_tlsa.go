@@ -19,7 +19,6 @@
 package safetlsa
 
 import (
-	"crypto/x509"
 	"encoding/hex"
 	"fmt"
 	"strings"
