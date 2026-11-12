@@ -25,8 +25,6 @@ import (
 	"strings"
 
 	"github.com/miekg/dns"
-
-	"github.com/namecoin/ncdns/certdehydrate"
 )
 
 func GetCertFromTLSA(domain string, tlsa *dns.TLSA, parentDERBytes []byte, parentPrivateKey interface{}, stapled map[string]string) ([]byte, error) {
@@ -48,35 +46,7 @@ func GetCertFromTLSA(domain string, tlsa *dns.TLSA, parentDERBytes []byte, paren
 		return domainCA, nil
 	}
 
-	// End entity cert not in user's trust store; full certificate; not hashed
-	if tlsa.Usage == 3 && tlsa.Selector == 0 && tlsa.MatchingType == 0 {
-		untrustedCertBytes, err := hex.DecodeString(tlsa.Certificate)
-		if err != nil {
-			return nil, fmt.Errorf("Error decoding certificate from hex: %s", err)
-		}
-
-		untrustedCert, err := x509.ParseCertificate(untrustedCertBytes)
-		if err != nil {
-			return nil, fmt.Errorf("Error parsing certificate: %s", err)
-		}
-
-		dehydratedCert, err := certdehydrate.DehydrateCert(untrustedCert)
-		if err != nil {
-			return nil, fmt.Errorf("Error dehydrating certificate: %s", err)
-		}
-
-		rehydratedCertTemplate, err := certdehydrate.RehydrateCert(dehydratedCert)
-		if err != nil {
-			return nil, fmt.Errorf("Error rehydrating certificate: %s", err)
-		}
-
-		rehydratedCertBytes, err := certdehydrate.FillRehydratedCertTemplate(*rehydratedCertTemplate, domain)
-		if err != nil {
-			return nil, fmt.Errorf("Error filling rehydrated certificate template: %s", err)
-		}
-
-		return rehydratedCertBytes, nil
-	}
+	// We don't support dehydrated DANE-EE certs anymore.
 
 	return nil, fmt.Errorf("Unsupported TLSA parameters")
 }
